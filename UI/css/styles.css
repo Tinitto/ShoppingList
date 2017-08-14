@@ -1,8 +1,9 @@
-html {
+html.home-page {
     background: url('../assets/img/shopping_carts.jpg') center center no-repeat;
     min-height: 100%;
     background-size: cover;
 }
+
 .navbar {
     background-color: #266850;
     color: #fff;

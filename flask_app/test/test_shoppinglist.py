@@ -27,12 +27,25 @@ class UserTests(unittest.TestCase):
         A user should be able to create a shopping list
         which has its attribute of creator equal to that user
         """
+        shopping_list = self.user.create_shopping_list('groceries')
+        self.assertEqual(self.user, shopping_list.creator)
 
     def test_user_delete_own_list(self):
         """
         A user can only delete his/her own shoppinglist
         and it should cease to exist
+
+        the shopping list  must be an instance of ShoppinList class
         """
+        user2 = shopping.User('Tom Doe', 'tom@example.com', 'password')
+        user_2_shopping_list = user2.create_shopping_list('hoilday shopping')
+        user_shopping_list = self.user.create_shopping_list('groceries')
+        third_shopping_list = 3
+        self.assertRaises(PermissionError, self.user.delete_shopping_list,
+                         user_2_shopping_list)
+        self.assertIsNone(self.user.delete_shopping_list(user_shopping_list))
+        self.assertRaises(TypeError, self.user.delete_shopping_list,
+                         third_shopping_list)
     
     def test_user_name_is_string(self):
         """

@@ -1,4 +1,4 @@
-# ShoppingList
+# ShoppingList [![Build Status](https://travis-ci.org/Tinitto/ShoppingList.png?branch=master)](https://travis-ci.org/Tinitto/ShoppingList)
 An app that allows you to keep and share a list of the items you want to spend money on
 
 ## About

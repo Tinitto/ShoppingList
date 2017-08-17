@@ -25,4 +25,7 @@ It also enables users to share such lists with other people for example if the s
 2. Link HTML/CSS frontend to the flask app
 3. Deploy demo app to Heroku
 
+## Other Details
+- Pivotal Tracker board for the project can be found [here](https://www.pivotaltracker.com/n/projects/2092528)
+
 

@@ -19,7 +19,8 @@ class UserTests(unittest.TestCase):
         Initialize the User object for all tests
         in this class to use
         """
-        self.user = shopping.User('John Doe', 'john@example.com', 'password') 
+        self.user = shopping.User('John Doe', 'john@example.com',
+                                 'password', 'johndoe') 
 
     def test_user_create_shoppinglist(self):
         """
@@ -37,7 +38,7 @@ class UserTests(unittest.TestCase):
 
         the shopping list  must be an instance of ShoppingList class
         """
-        user2 = shopping.User('Tom Doe', 'tom@example.com', 'password')
+        user2 = shopping.User('Tom Doe', 'tom@example.com', 'password', 'tomdoe')
         user_2_shopping_list = user2.create_shopping_list('hoilday shopping')
         user_shopping_list = self.user.create_shopping_list('groceries')
         third_shopping_list = 3
@@ -53,17 +54,27 @@ class UserTests(unittest.TestCase):
         A user's name can only be a string
         """
         self.assertRaises(TypeError, shopping.User, 5, 
-                        'john@example.com', 'password')
+                        'john@example.com', 'password', 'johndoe')
         self.assertRaises(TypeError, self.user.set_name, 5)
+
+    def test_user_username_is_string(self):
+        """
+        A user's username can only be a string and has no space
+        """
+        self.assertRaises(TypeError, shopping.User, 'John Doe', 
+                        'john@example.com', 'password', 5 )
+        self.assertRaises(TypeError, self.user.set_username, 5)
+        self.assertRaises(ValueError, self.user.set_username,
+             'Adam scott')
 
     def test_user_email_format(self):
         """
         An email should have only one @ and . and is a string
         """
         self.assertRaises(ValueError, shopping.User, 'John Doe',
-            'johnexample.com', 'password')
+            'johnexample.com', 'password', 'johndoe')
         self.assertRaises(ValueError, shopping.User, 'John Doe',
-            'john@examplecom', 'password')
+            'john@examplecom', 'password', 'johndoe')
         self.assertRaises(TypeError, shopping.User, 'John Doe',
             6, 'password')
         self.assertRaises(ValueError, self.user.set_email,
@@ -76,9 +87,9 @@ class UserTests(unittest.TestCase):
         and is a string
         """
         self.assertRaises(ValueError, shopping.User, 'John Doe',
-            'john@example.com', 'pas')
+            'john@example.com', 'pas', 'johndoe')
         self.assertRaises(TypeError, shopping.User, 'John Doe',
-            'john@example.com', 5)
+            'john@example.com', 5, 'johndoe')
         self.assertRaises(ValueError, self.user.set_password,
             'pas')
         self.assertRaises(TypeError, self.user.set_password,
@@ -91,6 +102,14 @@ class UserTests(unittest.TestCase):
         new_name = 'Tori Doe'
         self.user.set_name(new_name)
         self.assertEqual(new_name, self.user.name)
+
+    def test_set_name(self):
+        """
+        the set_username method should set the username of the user
+        """
+        new_username = 'joriun'
+        self.user.set_username(new_username)
+        self.assertEqual(new_username, self.user.username)
 
     def test_set_email(self):
         """

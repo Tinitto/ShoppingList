@@ -11,7 +11,7 @@ class User(object):
     """
     A User is the owner of shopping lists
     """
-    def __init__(self, name, email, password):
+    def __init__(self, name, email, password, username):
         if utilities.check_type(name, str,
             error_string="A user's name can only be a string"):
              self.name = name
@@ -19,6 +19,9 @@ class User(object):
             self.email = email
         if utilities.check_password_format(password):
             self.password = password
+        if utilities.check_type(username, str,
+            error_string="A user's username can only be a string"):
+             self.username = username
         self.shopping_lists = []
 
     def set_name(self, name):
@@ -28,6 +31,16 @@ class User(object):
         if utilities.check_type(name, str,
              error_string="A user's name can only be a string"):
              self.name = name
+
+    def set_username(self, username):
+        """
+        Set the username of the user
+        """
+        if ' ' in username:
+            raise ValueError('Username should have no space')
+        if utilities.check_type(username, str,
+             error_string="A user's username can only be a string"):
+             self.username = username
     
     def set_email(self, email):
         """

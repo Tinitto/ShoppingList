@@ -5,14 +5,14 @@ The entry point into the flask app
 
 from flask import Flask, session, request, redirect, url_for, abort, \
     render_template, flash
+from app.classes import shopping
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-app.config.update(
-    {
-        'SECRET_KEY':'development key'
-    }
+app.config.update(dict(
+    SECRET_KEY='development key'
+    )
 )
 
 app.config.from_envvar('SHOPPINGLIST_SETTINGS', silent=True)
@@ -32,6 +32,29 @@ def signup():
     The signup route handles POST data sent from 
     the signup form on the home/index page
     """
+    error = None
+    form_data = None
+    try:
+        form_data = dict(request.form)
+    except AttributeError:
+        error = 'invalid request'
+    if request.form['name']:
+        #try:
+        #    user = shopping.User(**form_data)
+        #except:
+        #    error = 'Error creating user. Check your input'
+
+        if not error:
+            # login immediately
+            form_data['logged_in'] = True
+            session['user'] = form_data # wrong form_data is 
+            session.modified = True
+            flash('Sign up has been successful')
+            return redirect(url_for('show_user_record',
+                     username=form_data['username']))
+    flash(error)
+    return redirect(url_for('index'))
+
 
 @app.route('/signout')
 def signout():
@@ -43,6 +66,7 @@ def signout():
         user = session['user']
         user['logged_in'] = False
         session['user'] = user
+        session.modified = True
         flash('You have logged out successfully')
         return redirect(url_for('index'))
     else:
@@ -75,21 +99,14 @@ def signin():
     else:
         saved_user['logged_in'] = True
         session['user'] = saved_user
+        session.modified = True
         flash('Login successful')
         return redirect(url_for('show_user_record',
                      username=saved_user['username']))
     return render_template('index.html', error=error)
 
 
-@app.route('/user')
-def show_users():
-    """
-    The show_users route shows(GET) the list of users
-    of the app
-    """
-
-
-@app.route('/user/<str:username>',
+@app.route('/user/<string:username>',
  methods=['POST', 'GET'])
 def show_user_record(username):
     """
@@ -101,9 +118,11 @@ def show_user_record(username):
     It allows creation (POST) of new shopping
     lists also.
     """
+    flash('successful redirect')
+    return render_template('lists.html')
 
 
-@app.route('/user/<str:username>/shoppinglist/<str:title>',
+@app.route('/user/<string:username>/shoppinglist/<string:title>',
 methods=['POST', 'GET', 'DELETE', 'PUT'])
 def show_single_shoppinglist(username, title):
     """
@@ -117,8 +136,8 @@ def show_single_shoppinglist(username, title):
     """
 
 
-@app.route('/user/<str:username>/shoppinglist/<str:title>\
-/item/<str:name>', methods=['DELETE', 'PUT'])
+@app.route('/user/<string:username>/shoppinglist/<string:title>\
+/item/<string:name>', methods=['DELETE', 'PUT'])
 def edit_shopping_item(username, title, name):
     """
     This route deals allows deleting (DELETE) or editing(PUT) of an

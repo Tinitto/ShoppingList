@@ -85,3 +85,15 @@ def delete_user_from_g(username):
     else:
         raise KeyError('username does not exist')
 
+def add_user_to_session(username):
+    """
+    Adds the session variable username for 
+    logged in user
+    """
+
+
+def remove_user_from_session(username):
+    """
+    Removes the session variable username
+    from the session to logout the user
+    """

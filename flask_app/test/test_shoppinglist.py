@@ -10,6 +10,7 @@ included:
 import unittest
 from app.classes import shopping
 from app.classes import utilities
+from nose.plugins.attrib import attr
 
 
 class UserTests(unittest.TestCase):
@@ -25,26 +26,28 @@ class UserTests(unittest.TestCase):
 
     def test_user_create_shoppinglist(self):
         """
-        A user should be able to create a shopping list
-        which has its attribute of creator equal to that user
+        A user should be able to create a shopping list and add it to the
+        his/her list of shopping lists
         """
         shopping_list = self.user.create_shopping_list('groceries')
-        self.assertEqual(self.user, shopping_list.creator)
+        self.assertIn(shopping_list, self.user.shopping_lists)
 
-    def test_user_delete_own_list(self):
+    def test_user_delete_shopping_list(self):
         """
-        A user can only delete his/her own shoppinglist
+        A user can delete his/her own shoppinglist
         and it should cease to exist
+        It should exist in his/her lists before it is deleted
 
-        the shopping list  must be an instance of ShoppinList class
+        the shopping list  must be an instance of ShoppingList class
         """
         user2 = shopping.User('Tom Doe', 'tom@example.com', 'password')
         user_2_shopping_list = user2.create_shopping_list('hoilday shopping')
         user_shopping_list = self.user.create_shopping_list('groceries')
         third_shopping_list = 3
-        self.assertRaises(PermissionError, self.user.delete_shopping_list,
+        self.assertRaises(KeyError, self.user.delete_shopping_list,
                          user_2_shopping_list)
-        self.assertIsNone(self.user.delete_shopping_list(user_shopping_list))
+        self.user.delete_shopping_list(user_shopping_list)
+        self.assertNotIn(user_shopping_list, self.user.shopping_lists)
         self.assertRaises(TypeError, self.user.delete_shopping_list,
                          third_shopping_list)
     
@@ -85,6 +88,30 @@ class UserTests(unittest.TestCase):
             5)
 
     # a user can delete/edit items that belong to shopping list he/she owns
+    # check that each set method actually sets the attributes
+    def test_set_name(self):
+        """
+        the set_name method should set the name of the user
+        """
+        new_name = 'Tori Doe'
+        self.user.set_name(new_name)
+        self.assertEqual(new_name, self.user.name)
+
+    def test_set_email(self):
+        """
+        the set_email method should set the email of the user
+        """
+        new_email = 'tori@example.com'
+        self.user.set_email(new_email)
+        self.assertEqual(new_email, self.user.email)
+
+    def test_set_password(self):
+        """
+        the set_password method should set the password of the user
+        """
+        new_password = 'password123'
+        self.user.set_password(new_password)
+        self.assertEqual(new_password, self.user.password)
         
  
 
@@ -100,8 +127,27 @@ class ShoppingListTests(unittest.TestCase):
         self.shopping_list = shopping.ShoppingList('Groceries',
          'family daily grocery shopping list')
 
-    # an item can be added to Shopping list
-    # an item can be deleted from a shopping list
+    def test_item_can_be_added(self):
+        """
+        An item can be added to the shopping list such that
+        it becomes part of the list of items in the shopping list
+        """
+        item_added = self.shopping_list.add_item('mangoes')
+        self.assertIn(item_added, self.shopping_list.items)
+
+    def test_an_item_can_be_deleted(self):
+        """
+        Only the parent list can have the method to delete
+        an item
+        """
+
+    def test_only_creator_can_edit_list(self):
+        """
+        only creator can set the title
+        only creator can set the description
+        only creator can add an item
+        only creator can delete an item
+        """
     
     def test_title_is_string(self):
         """
@@ -129,6 +175,7 @@ class ShoppingListTests(unittest.TestCase):
         an instance of the User class only (not even None)
         """
 
+    # check that each set method actually sets the attributes
 
 
 class ShoppingItemTests(unittest.TestCase):
@@ -142,11 +189,58 @@ class ShoppingItemTests(unittest.TestCase):
         """
         self.shopping_item = shopping.ShoppingItem('fruit', 5, 'units')
 
-    # an item's quantity can be increased
-    # an item's quantity can only be a number
-    # an item's name can only be a string
-    # an item's unit can only be a string
-    # the item belongs to a shopping list
+    def test_item_quantity_is_number(self):
+        """
+        An item quantity can only be a number of float or int type
+        """
+        self.assertRaises(TypeError, shopping.ShoppingItem, 
+        'fruit', quantity='five')
+        self.assertRaises(TypeError, self.shopping_item.set_quantity,
+            {'quantity':'float or int is expected, not dict'})
+
+    def test_item_name_is_string(self):
+        """
+        An item name can only be a string
+        """
+        self.assertRaises(TypeError, shopping.ShoppingItem, 
+        5)
+        self.assertRaises(TypeError, self.shopping_item.set_name,
+            {'name':'string is expected, not dict'})
+ 
+    def test_item_unit_is_string(self):
+        """
+        An item unit can only be a string
+        """
+        self.assertRaises(TypeError, shopping.ShoppingItem, 
+        'fruit', unit=4)
+        self.assertRaises(TypeError, self.shopping_item.set_unit,
+            {'unit':'string is expected, not dict'})
+    # the item belongs to a shopping list and not None
+
+    # check that each set method actually sets the attributes
+    def test_set_name(self):
+        """
+        the set_name method should set the name of the item
+        """
+        new_name = 'vegetables'
+        self.shopping_item.set_name(new_name)
+        self.assertEqual(new_name, self.shopping_item.name)
+
+    def test_set_quantity(self):
+        """
+        the set_quantity method should set the quantity of the item
+        """
+        new_quantity = 40
+        self.shopping_item.set_quantity(new_quantity)
+        self.assertEqual(new_quantity, self.shopping_item.quantity)
+
+    def test_set_unit(self):
+        """
+        the set_unit method should set the unit of the item
+        """
+        new_unit = 'kg'
+        self.shopping_item.set_unit(new_unit)
+        self.assertEqual(new_unit, self.shopping_item.unit)
 
 
 class UtilitiesTests(unittest.TestCase):
@@ -157,11 +251,12 @@ class UtilitiesTests(unittest.TestCase):
     
     def test_check_type_return(self):
         """
-        check_type returns True when types are the same
+        check_type returns True when the object is of any type in args
         check_type raises TypeError when the types are different
-        check_type raises an error when the type_object is not a type
+        check_type raises an error when the type_object is not a type        
         """
         self.assertTrue(utilities.check_type('girl', str))
+        self.assertTrue(utilities.check_type('girl', float, int, str))
         self.assertRaises(TypeError, utilities.check_type, 5, bool)
         self.assertRaises(ValueError, utilities.check_type, 5, 9)
     

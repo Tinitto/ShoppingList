@@ -3,13 +3,9 @@ The entry point into the flask app
 """
 
 
-<<<<<<< HEAD
-from flask import Flask
-=======
 from flask import Flask, session, request, redirect, url_for, abort, \
     render_template, flash
 from app.classes import shopping
->>>>>>> crud_setup
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -59,8 +55,6 @@ def signup():
     return redirect(url_for('index'))
 
 
-<<<<<<< HEAD
-=======
 @app.route('/signout')
 def signout():
     """
@@ -78,7 +72,6 @@ def signout():
         error = 'User not found'
     return render_template('index.html', error=error)
 
->>>>>>> crud_setup
 
 @app.route('/signin', methods=['POST'])
 def signin():
@@ -86,19 +79,6 @@ def signin():
     The signin route handles POST data sent 
     from the signin form on the home/index page
     """
-<<<<<<< HEAD
-
-
-@app.route('/user')
-def show_users():
-    """
-    The show_users route shows(GET) the list of users
-    of the app
-    """
-
-
-@app.route('/user/<int:user_id>',
-=======
     error = None
     try:
         saved_user = session['user']
@@ -123,7 +103,6 @@ def show_users():
 
 
 @app.route('/user/<string:username>',
->>>>>>> crud_setup
  methods=['POST', 'GET'])
 def show_user_record(user_id):
     """
@@ -139,11 +118,7 @@ def show_user_record(user_id):
     return render_template('lists.html')
 
 
-<<<<<<< HEAD
-@app.route('/user/<int:user_id>/shoppinglist/<int:list_id>',
-=======
 @app.route('/user/<string:username>/shoppinglist/<string:title>',
->>>>>>> crud_setup
 methods=['POST', 'GET', 'DELETE', 'PUT'])
 def show_single_shoppinglist(user_id, list_id):
     """
@@ -157,15 +132,9 @@ def show_single_shoppinglist(user_id, list_id):
     """
 
 
-<<<<<<< HEAD
-@app.route('/user/<int:user_id>/shoppinglist/<int:list_id>\
-/item/<int:item_id>', methods=['DELETE', 'PUT'])
-def edit_shopping_item(user_id, list_id, item_id):
-=======
 @app.route('/user/<string:username>/shoppinglist/<string:title>\
 /item/<string:name>', methods=['DELETE', 'PUT'])
 def edit_shopping_item(username, title, name):
->>>>>>> crud_setup
     """
     This route deals allows deleting (DELETE) or editing(PUT) of an
     item on a list

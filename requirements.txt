@@ -1,4 +1,5 @@
--e git+https://github.com/Tinitto/ShoppingList.git@c1f482786bdad2e1c2e1074ae1a63ed24ccdab5e#egg=app&subdirectory=flask_app
+-e git+https://github.com/Tinitto/ShoppingList.git@6bfb67384b905fbfe4f61f952d892d4a91a7a88c#egg=app&subdirectory=flask_app
+asciinema==1.4.0
 astroid==1.5.3
 certifi==2017.7.27.1
 chardet==3.0.4

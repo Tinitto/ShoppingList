@@ -1,0 +1,62 @@
+html.home-page {
+    background: url('../assets/img/shopping_carts.jpg') center center no-repeat;
+    min-height: 100%;
+    background-size: cover;
+}
+
+.navbar {
+    background-color: #266850;
+    color: #fff;
+}
+.navbar a {
+    color: #fff;
+}
+
+#no-background-image {
+    background: #fff;
+    min-height: 100%;
+}
+div#front-page-dark {
+    background-color: rgba(0,0,0,0.6);
+    min-height: 92vh;
+
+}
+
+.front-page {
+    background: rgba(255,255,255, 0) !important;
+    color: #fff;
+} 
+
+.front-page-content {
+    padding: 30vh 2vw 30vh 2vw;
+}
+
+div#home-page-form {
+    background: #266850;
+    padding: 1px 0%;
+}
+
+div#front-form-tab-content {
+    padding: 5% 0%;
+}
+
+button.front-submit {
+    background-color: #266850;
+    color: #fff;
+    border: 1px solid #fff;
+}
+
+div#home-page-form ul.nav-tabs li.nav-item a {
+    background-color: #fff;
+    color: #000;
+
+}
+div#home-page-form ul.nav-tabs li.nav-item a.active {
+    background-color: #266850;
+    color: #fff;
+    border-color: #266850;
+}
+
+p.home-intro {
+    font-size: 1.3em;
+}

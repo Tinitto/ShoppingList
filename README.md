@@ -55,9 +55,10 @@ It also enables users to share such lists with other people for example if the s
 5. Observer the output in your terminal
 
 ## To Do
-1. Add [TravisCI](https://travis-ci.org/)
-2. Link HTML/CSS frontend to the flask app
-3. Deploy demo app to Heroku
+1. Finish Login, Logout, Register, and CRUD helper functions
+2. Finish templates for single shopping list, list of shopping lists and create/edit forms for shopping lists and items
+3. Add Coveralls
+4. Deploy demo app to Heroku
 
 ## Other Details
 - Pivotal Tracker board for the project can be found [here](https://www.pivotaltracker.com/n/projects/2092528)

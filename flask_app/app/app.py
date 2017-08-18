@@ -23,6 +23,7 @@ def index():
     """
     The home/index page shows signup and signin forms
     """
+    return render_template('index.html')
 
 
 @app.route('/signup', methods=['POST'])
@@ -78,6 +79,9 @@ def signin():
     """
     The signin route handles POST data sent 
     from the signin form on the home/index page
+
+    user registered in session is a 
+    dictionary of username, password and logged_in
     """
     error = None
     try:
@@ -104,11 +108,11 @@ def signin():
 
 @app.route('/user/<string:username>',
  methods=['POST', 'GET'])
-def show_user_record(user_id):
+def show_user_record(username):
     """
     The show_user_record route shows(GET) 
-    the basic details about the user of id,
-    user_id and the list of shopping lists
+    the basic details about the user of the said
+    username and the list of shopping lists
      belonging to that user. 
     
     It allows creation (POST) of new shopping
@@ -120,10 +124,10 @@ def show_user_record(user_id):
 
 @app.route('/user/<string:username>/shoppinglist/<string:title>',
 methods=['POST', 'GET', 'DELETE', 'PUT'])
-def show_single_shoppinglist(user_id, list_id):
+def show_single_shoppinglist(username, title):
     """
-    This view shows(GET) all the items in a shopping list of id 
-    list_id belonging to user user_id. 
+    This view shows(GET) all the items in a shopping list of the 
+    given title belonging to user of the mentioned username. 
 
     It also allows for editting(PUT) and deleting(DELETE) of a 
     shopping list.

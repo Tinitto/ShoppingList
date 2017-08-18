@@ -59,7 +59,7 @@ def get_all_users_from_g():
     if hasattr(g, 'users'):
         return g.users
     else:
-        return None
+        return {}
 
 
 def get_all_usernames_in_g():
@@ -70,7 +70,7 @@ def get_all_usernames_in_g():
     if users:
         return users.keys()
     else:
-        return None
+        return ()
 
 def delete_user_from_g(username):
     """
@@ -90,10 +90,23 @@ def add_user_to_session(username):
     Adds the session variable username for 
     logged in user
     """
+    try:
+        get_user_from_g(username)
+    except KeyError:
+        raise KeyError('User does not exist')
+
+    session['username'] = username
+    session.modified = True
 
 
-def remove_user_from_session(username):
+def remove_user_from_session():
     """
     Removes the session variable username
     from the session to logout the user
     """
+    if 'username' in session.keys():
+        session.pop('username')
+        session.modified = True
+    else:
+        raise KeyError('Username does not exist \
+        in the session')

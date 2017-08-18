@@ -4,7 +4,7 @@ helper functions in the app/crud folder
 """
 
 import unittest
-from flask import current_app, g
+from flask import current_app, g, session
 from app.app import app
 from app.crud import user as crud_user
 from app.classes import shopping
@@ -75,7 +75,7 @@ class UserCrudTests(unittest.TestCase):
                 users[new_user.username] = new_user
 
             self.assertEqual(users, crud_user.get_all_users_from_g())
-
+    
     def test_delete_user_from_g(self):
         """
         delete_user_from_g should remove the user from 
@@ -91,6 +91,32 @@ class UserCrudTests(unittest.TestCase):
             # g.users is empty
             self.assertRaises(AttributeError, crud_user.delete_user_from_g,
                               self.user.username) 
+
+    def test_add_user_to_session(self):
+        """
+        Tests whether user is actually added to session
+        as long he/she exists in g.users
+        """
+        with app.app_context():
+            with current_app.test_request_context():
+                self.assertRaises(KeyError, crud_user.add_user_to_session, self.user.username)
+                self.assertRaises(TypeError, crud_user.add_user_to_session, 5)
+                g.users = {self.user.username: self.user}
+                crud_user.add_user_to_session(self.user.username)
+                self.assertEqual(session['username'], self.user.username)
+
+
+    def test_remove_user_from_session(self):
+        """
+        Tests whether username has been removed from session
+        """
+        with app.app_context():
+            with current_app.test_request_context():
+                session['username'] = self.user.username
+                crud_user.remove_user_from_session()
+                def get_username():
+                    return session['username']
+                self.assertRaises(KeyError, get_username)
                
             
             

@@ -11,3 +11,4 @@ notifications:
   webhooks: https://coveralls.io/webhook?repo_token=X6JdJ0hDMlzKhHIAi5NTG9ZUEkEw01PB2
 after_success:
   coveralls
+  codecov

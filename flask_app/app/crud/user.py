@@ -108,8 +108,8 @@ def remove_user_from_session():
         session.modified = True
     else:
         raise KeyError('Username does not exist in the session')
-
-
+        
+        
 def process_form_data(dict_form_data):
     """ 
     After casting form data to dict, the values 

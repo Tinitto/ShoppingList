@@ -3,7 +3,6 @@ This file contains helper functions \
 """
 
 from flask import g, session
-from app.app import app
 from app.classes import shopping, utilities
 
 
@@ -108,5 +107,18 @@ def remove_user_from_session():
         session.pop('username')
         session.modified = True
     else:
-        raise KeyError('Username does not exist \
-        in the session')
+        raise KeyError('Username does not exist in the session')
+        
+        
+def process_form_data(dict_form_data):
+    """ 
+    After casting form data to dict, the values 
+    become lists. Transform the lists to non-iterables
+    """
+    new_dict = {}
+    try:
+        for key in dict_form_data.keys():
+            new_dict[key] = dict_form_data[key][0]
+    except AttributeError:
+        raise AttributeError('The input should be a dictionary')
+    return new_dict

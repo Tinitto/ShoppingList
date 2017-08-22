@@ -36,12 +36,11 @@ def signup():
     error = None
     form_data = None
     try:
-        #form_data = dict(request.form)
         form_data = user_functions.process_form_data(dict(request.form))
     except AttributeError:
-        error = 'invalid request'        
+        error = 'invalid request'
     if form_data:
-       # get the data and attempt to create a new user in g
+        # get the data and attempt to create a new user in g
         try:
             user_functions.create_new_user(form_data)
         except ValueError:

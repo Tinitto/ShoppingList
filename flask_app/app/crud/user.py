@@ -107,8 +107,8 @@ def remove_user_from_session():
         session.pop('username')
         session.modified = True
     else:
-        raise KeyError('Username does not exist \
-        in the session')
+        raise KeyError('Username does not exist in the session')
+
 
 def process_form_data(dict_form_data):
     """ 

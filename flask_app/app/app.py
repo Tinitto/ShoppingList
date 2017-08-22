@@ -6,6 +6,7 @@ The entry point into the flask app
 from flask import Flask, session, request, redirect, url_for, abort, \
     render_template, flash
 from app.classes import shopping
+from app.crud import user as user_functions
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -35,24 +36,29 @@ def signup():
     error = None
     form_data = None
     try:
-        form_data = dict(request.form)
+        #form_data = dict(request.form)
+        form_data = user_functions.process_form_data(dict(request.form))
     except AttributeError:
-        error = 'invalid request'
-    if request.form['name']:
-        #try:
-        #    user = shopping.User(**form_data)
-        #except:
-        #    error = 'Error creating user. Check your input'
-
-        if not error:
-            # login immediately
-            form_data['logged_in'] = True
-            session['user'] = form_data # wrong form_data is 
-            session.modified = True
-            flash('Sign up has been successful')
-            return redirect(url_for('show_user_record',
-                     username=form_data['username']))
-    flash(error)
+        error = 'invalid request'        
+    if form_data:
+       # get the data and attempt to create a new user in g
+        try:
+            user_functions.create_new_user(form_data)
+        except ValueError:
+            error = 'Unacceptable form input %s' % str(form_data)
+        else:
+            # if new user is created, log them in
+            try:
+                user_functions.add_user_to_session(form_data['username'])
+            except KeyError:
+                error = 'Error while logging in'
+            else:
+                # redirect the user to dashboard
+                flash('User sign up successful')
+                return redirect(url_for('show_user_record',
+                                username=form_data['username']))
+    if error:
+        flash(error)
     return redirect(url_for('index'))
 
 
@@ -62,48 +68,47 @@ def signout():
     The signout route logs out the user
     """
     error = None
-    if session['user']:
-        user = session['user']
-        user['logged_in'] = False
-        session['user'] = user
-        session.modified = True
-        flash('You have logged out successfully')
-        return redirect(url_for('index'))
-    else:
-        error = 'User not found'
-    return render_template('index.html', error=error)
+    # remove username from session
+    try:
+        user_functions.remove_user_from_session()
+    except KeyError:
+        error = 'You are not logged in'
+    if error:
+        flash(error)
+    return render_template('index.html')
 
 
 @app.route('/signin', methods=['POST'])
 def signin():
     """
-    The signin route handles POST data sent 
-    from the signin form on the home/index page
-
-    user registered in session is a 
-    dictionary of username, password and logged_in
+    Logs in the user
     """
     error = None
+    form_data = None
+    # get request.form data
     try:
-        saved_user = session['user']
-    except KeyError:
-        error = 'an error occured in your session. Try refreshing'
-        return render_template('index.html', error=error)
+        form_data = user_functions.process_form_data(dict(request.form))
+    except AttributeError:
+        error = "Invalid form input"
     
-    if saved_user['logged_in']:
-        error = 'Already logged in'
-    elif request.form['username'] != saved_user['username']:
-        error = 'Invalid username'
-    elif request.form['password'] != saved_user['password']:
-        error = 'Invalid password'
-    else:
-        saved_user['logged_in'] = True
-        session['user'] = saved_user
-        session.modified = True
-        flash('Login successful')
-        return redirect(url_for('show_user_record',
-                     username=saved_user['username']))
-    return render_template('index.html', error=error)
+    if form_data:
+        try:
+            user = user_functions.get_user_from_g(form_data['username'])
+        except KeyError:
+            error = "User does not exist"
+        else:
+            # if user exists, check against the saved password
+            if user.password == form_data['password']:
+                # if it is the same, save username to session
+                user_functions.add_user_to_session(form_data['username'])
+                flash('Login successful')
+                return redirect(url_for('show_user_record',
+                                username=form_data['username']))
+            else:
+                error = "Invalid password or username"
+    if error:
+        flash(error)
+    return render_template('index.html')
 
 
 @app.route('/user/<string:username>',

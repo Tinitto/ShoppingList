@@ -7,8 +7,6 @@ import unittest
 from app import create_app, db
 from app.classes.shopping import User, ShoppingList, ShoppingItem
 
-
-
 class ShoppingListModelTest(unittest.TestCase):
     """
     All tests on the ShoppingList model plus a user object

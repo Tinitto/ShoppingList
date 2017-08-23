@@ -34,7 +34,7 @@ def signup():
     except AttributeError:
         error = 'invalid request'
     if form_data:
-        # get the data and attempt to create a new user in g
+        # get the data and attempt to create a new user
         try:
             user_functions.create_new_user(form_data)
         except ValueError:
@@ -86,7 +86,7 @@ def signin():
     
     if form_data:
         try:
-            user = user_functions.get_user_from_g(form_data['username'])
+            user = user_functions.get_user_by_username(form_data['username'])
         except KeyError:
             error = "User does not exist"
         else:

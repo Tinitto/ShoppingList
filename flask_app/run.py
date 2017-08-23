@@ -1,22 +1,16 @@
 """
-The entry point into the flask app
+This is the entry point for the app
 """
 
-
-from flask import Flask, session, request, redirect, url_for, abort, \
+import os
+from flask import request, redirect, url_for,\
     render_template, flash
-from app.classes import shopping
+from app import create_app
+# from app.classes import shopping
 from app.crud import user as user_functions
 
-app = Flask(__name__)
-app.config.from_object(__name__)
-
-app.config.update(dict(
-    SECRET_KEY='development key'
-    )
-)
-
-app.config.from_envvar('SHOPPINGLIST_SETTINGS', silent=True)
+config_name = os.getenv('APP_SETTINGS') or 'development'
+app = create_app(config_name)
 
 # routes
 @app.route('/')
@@ -147,3 +141,6 @@ def edit_shopping_item(username, title, name):
     This route deals allows deleting (DELETE) or editing(PUT) of an
     item on a list
     """
+
+if __name__ == '__main__':
+    app.run()

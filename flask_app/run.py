@@ -6,11 +6,14 @@ import os
 from flask import request, redirect, url_for,\
     render_template, flash
 from app import create_app
-# from app.classes import shopping
+from app.classes.shopping import db
 from app.crud import user as user_functions
 
 config_name = os.getenv('APP_SETTINGS') or 'development'
 app = create_app(config_name)
+
+with app.app_context():
+    db.create_all()
 
 # routes
 @app.route('/')

@@ -12,6 +12,7 @@ class Config(object):
     SECRET = os.getenv('SECRET')
     CSRF_ENABLED = True
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 class DevelopmentConfig(Config):
@@ -21,6 +22,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SECRET = "development secret"
     SQLALCHEMY_DATABASE_URI = "sqlite://"
+    SECRET_KEY = 'development key'
 
 
 class TestingConfig(Config):
@@ -31,6 +33,7 @@ class TestingConfig(Config):
     SECRET = "development secret"
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/testdb"
+    SECRET_KEY = 'development key'
 
 class StagingConfig(Config):
     """

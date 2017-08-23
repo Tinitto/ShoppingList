@@ -2,8 +2,9 @@
 This file contains helper functions \
 """
 
-from flask import g, session
+from flask import session
 from app.classes import shopping, utilities
+
 
 
 # def add_user_to_g(user):

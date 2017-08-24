@@ -39,3 +39,4 @@ coverage.xml
 
 # Mr Developer
 .mr.developer.cfg
+.coveralls.yml

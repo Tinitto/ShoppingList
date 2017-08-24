@@ -5,12 +5,22 @@ The module contains the following classes
  - ShoppingItem
 """
 from app.classes import utilities
+from app import db
 
 
-class User(object):
+class User(db.Model):
     """
     A User is the owner of shopping lists
     """
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    email = db.Column(db.String(120), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    shopping_lists = db.relationship('ShoppingList', backref='owner',
+                                    lazy='dynamic', cascade='all, delete-orphan')
+
     def __init__(self, name, email, password, username):
         if utilities.check_type(name, str,
             error_string="A user's name can only be a string"):
@@ -22,7 +32,6 @@ class User(object):
         if utilities.check_type(username, str,
             error_string="A user's username can only be a string"):
              self.username = username
-        self.shopping_lists = []
 
     def set_name(self, name):
         """
@@ -31,6 +40,7 @@ class User(object):
         if utilities.check_type(name, str,
              error_string="A user's name can only be a string"):
              self.name = name
+             db.session.commit()
 
     def set_username(self, username):
         """
@@ -41,6 +51,7 @@ class User(object):
         if utilities.check_type(username, str,
              error_string="A user's username can only be a string"):
              self.username = username
+             db.session.commit()
     
     def set_email(self, email):
         """
@@ -48,6 +59,7 @@ class User(object):
         """
         if utilities.check_email_format(email):
             self.email = email
+            db.session.commit()
 
     def set_password(self, password):
         """
@@ -56,14 +68,31 @@ class User(object):
         self.password = password
         if utilities.check_password_format(password):
             self.password = password
+            db.session.commit()
 
     def create_shopping_list(self, title):
         """
         Creates a ShoppingList object whose creator attribute
         points to this user object
         """
-        shopping_list = ShoppingList(title)
-        self.shopping_lists.append(shopping_list)
+        shopping_list = ShoppingList(title, owner=self)
+        shopping_list.save()
+        return ShoppingList.query.filter_by(title=title).first()
+
+    def get_shopping_lists(self):
+        """
+        Get all the shopping lists that belong to the user
+        """
+        return ShoppingList.query.filter_by(owner=self).all()
+
+    def get_shopping_list_by_title(self, title):
+        """
+        Get the shopping list with the given title
+        if it belongs to the user
+        """
+        shopping_list = None
+        if utilities.check_type(title, str):
+            shopping_list = ShoppingList.query.filter_by(title=title, owner=self).first()
         return shopping_list
 
     def delete_shopping_list(self, shopping_list):
@@ -73,31 +102,55 @@ class User(object):
         """
         if not isinstance(shopping_list, ShoppingList):
             raise TypeError('Object is not a shopping list object')
-        if shopping_list not in self.shopping_lists:
+        if not shopping_list.owner == self:
             raise KeyError('Shopping list does not exist')
-        self.shopping_lists.remove(shopping_list)
-        shopping_list = None
+        shopping_list.delete()
+
+    def save(self):
+        """
+        Saving to the database. After initialization, call this def
+        """
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return User.query.all()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<User: %s>" % self.username
 
 
-class ShoppingList(object):
+class ShoppingList(db.Model):
     """
     A ShoppingList represents one shopping list
     It contains shopping items
     """
-    def __init__(self, title, description=''):
-        #self.creator = creator
-        if utilities.check_type(title, str):
-            self.title = title
-        if utilities.check_type(description, str):
-            self.description = description
-        self.items = []
+    __tablename__ = 'shoppinglist'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(160), nullable=False)
+    description = db.Column(db.String(200))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    items = db.relationship('ShoppingItem', backref='parent_list',
+                            lazy='dynamic', cascade='all, delete-orphan')
 
-    #def is_creator(self, user):
-      #  """
-      #  Checks whether the object passed is the 
-      #  same as self.creator
-      #  """
-      #  return user == self.creator
+    def __init__(self, title, description='', owner=None):
+        # test to ensure a user is never None
+        if owner:
+            if utilities.check_type(owner, User):
+                self.owner = owner
+        if self.owner:
+            if utilities.check_type(title, str):
+                self.title = title
+            if utilities.check_type(description, str):
+                self.description = description
+        else:
+            raise ValueError('Invalid arguments')
+        # self.items = []
 
     def set_title(self, title):
         """
@@ -105,6 +158,7 @@ class ShoppingList(object):
         """
         if utilities.check_type(title, str):
             self.title = title
+            db.session.commit()
 
     def set_description(self, description):
         """
@@ -112,41 +166,86 @@ class ShoppingList(object):
         """
         if utilities.check_type(description, str):
             self.description = description
+            db.session.commit()
     
     def add_item(self, item_name):
         """
         Adds an item to the list giving it the name
         item_name
         """
-        item = ShoppingItem(item_name)
-        self.items.append(item)
-        return item
-
+        if utilities.check_type(item_name, str):
+            shopping_item = ShoppingItem(item_name, parent_list=self)
+            shopping_item.save()
+            return ShoppingItem.query.filter_by(name=item_name, parent_list=self).first()
+    
     def delete_item(self, item):
         """
         Deletes an item from a shopping list
         """
         if not isinstance(item, ShoppingItem):
             raise TypeError('The item is of invalid type')
-        if item in self.items:
-            self.items.remove(item)
+        if item.parent_list == self:
+            item.delete()
         else:
             raise KeyError('The item does not exist')
 
+    def get_shopping_items(self):
+        """
+        Get all the shopping items that belong to the list
+        """
+        return ShoppingItem.query.filter_by(parent_list=self).all()
 
-class ShoppingItem(object):
+    def get_shopping_item_by_name(self, name):
+        """
+        Get the shopping item with the given name
+        if it belongs to the shopping list
+        """
+        shopping_item = None
+        if utilities.check_type(name, str):
+            shopping_item = ShoppingList.query.filter_by(name=name, parent_list=self).first()
+        return shopping_item
+
+    def save(self):
+        """
+        Saving to the database. After initialization, call this def
+        """
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<ShoppingList: %s>" % self.title
+
+
+class ShoppingItem(db.Model):
     """
     A ShoppingItem represents a single item in 
-    a shopping list
+    a shopping item
     """
-    def __init__(self, name, quantity=0, unit='', parent_list=None):
-        if utilities.check_type(name, str):
-            self.name = name
-        if utilities.check_type(quantity, float, int):
-            self.quantity = quantity
-        if utilities.check_type(unit, str):
-            self.unit = unit
-        self.parent_list = parent_list
+    __tablename__ = 'shoppingitem'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120))
+    quantity = db.Column(db.Float)
+    unit = db.Column(db.String(60))
+    shoppinglist_id = db.Column(db.Integer, db.ForeignKey('shoppinglist.id'))
+
+    def __init__(self, name, quantity=0, unit='', parent_list=None): # , parent_list=None):
+        # test that an item is nver created parent_list = None
+        if parent_list:
+            if utilities.check_type(parent_list, ShoppingList):
+                self.parent_list = parent_list
+        if self.parent_list:
+            if utilities.check_type(name, str):
+                self.name = name
+            if utilities.check_type(quantity, float, int):
+                self.quantity = float(quantity)
+            if utilities.check_type(unit, str):
+                self.unit = unit
+        else:
+            raise ValueError('Invalid arguments')
 
     def set_name(self, name):
         """
@@ -154,6 +253,7 @@ class ShoppingItem(object):
         """
         if utilities.check_type(name, str):
             self.name = name
+            db.session.commit()
 
     def set_unit(self, unit):
         """
@@ -161,6 +261,7 @@ class ShoppingItem(object):
         """
         if utilities.check_type(unit, str):
             self.unit = unit
+            db.session.commit()
 
     def set_quantity(self, quantity):
         """
@@ -168,3 +269,18 @@ class ShoppingItem(object):
         """
         if utilities.check_type(quantity, float, int):
             self.quantity = float(quantity)
+            db.session.commit()
+
+    def save(self):
+        """
+        Saving to the database. After initialization, call this def
+        """
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<ShoppingItem: %s>" % self.name

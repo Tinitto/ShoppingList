@@ -14,24 +14,38 @@
   <body class="front-page">
       <!-- navbar -->
         <nav class="navbar navbar-expand-lg">
-          <a class="navbar-brand" href="/">
+          <p><a class="navbar-brand" href="{{ url_for('index')}}">
            ShoppingListApp
-          </a>         
+          </a>
+           {% if 'username' in session.keys() %}
+          
+            <a href="{{ url_for('signout')}}">Log out |</a>
+            <a href="{{ url_for('show_user_record', username=session['username'])}}">
+              My Lists
+            </a>
+          {% endif %}   
+          {% if 'username' not in session.keys() %}
+            <a href="{{ url_for('signin')}}">Log in</a>
+
+          {% endif %}  
+          </p>       
         </nav>
 
     <!--front-page-container-->
     <div id="front-page-dark">
         <div id='content' class="container front-page-content">
-          <div class='row'>
-            {% for message in get_flashed_messages() %}
+          {% for message in get_flashed_messages() %}
+          <div class='row alert alert-info'>
             <div class='col-sm-12 text-center flash'>{{ message }}</div>
-            {% endfor %}
           </div>
-          <div class='row'>
-              {% if error %}
+            {% endfor %}
+
+            {% if error %}
+            <div class='row alert alert-danger'>
               <div class='col-sm-12 text-center flash'>{{ error }}</div>
-              {% endif %}
             </div>
+            {% endif %}
+          
             <div class="row">
                 <div class="col-sm-8"> 
                   <div class="text-center">
@@ -54,7 +68,7 @@
                 <div class="tab-content" id="front-form-tab-content">
                   <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
                     <div class="container">
-                      <form action="/signin" method="POST">
+                      <form action="{{ url_for('signin')}}" method="POST">
                         <div class="form-group row">
                           <label for="username-in" class="col-sm-3 col-form-label">Username</label>
                             <div class="col-sm-9">
@@ -77,7 +91,7 @@
                   </div> <!--tab-pane -->
                   <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
                     <div class="container">
-                      <form action='/signup' method="POST">
+                      <form action="{{ url_for('signup')}}" method="POST">
                         <div class="form-group row">
                           <label for="username-up"  class="col-sm-3 col-form-label">Username</label>
                             <div class="col-sm-9">

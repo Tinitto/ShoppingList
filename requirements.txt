@@ -1,6 +1,6 @@
 alembic==0.9.5
 aniso8601==1.2.1
--e git+https://github.com/Tinitto/ShoppingList.git@47736140976ce4fc0cf5a7df56b94aec6261d50a#egg=app&subdirectory=flask_app
+-e git+https://github.com/Tinitto/ShoppingList.git@b44430e9ab85d5b29b4acf4dffc79d96738eca30#egg=app&subdirectory=flask_app
 asciinema==1.4.0
 astroid==1.5.3
 Babel==2.5.0
@@ -10,6 +10,8 @@ chardet==3.0.4
 click==6.7
 codecov==2.0.9
 coverage==4.0.3
+coveralls==1.2.0
+docopt==0.6.2
 Flask==0.12.2
 Flask-BabelEx==0.9.3
 Flask-Login==0.4.0
@@ -23,6 +25,7 @@ Flask-Security==3.0.0
 Flask-SQLAlchemy==2.2
 Flask-Testing==0.6.2
 Flask-WTF==0.14.2
+gunicorn==19.7.1
 idna==2.6
 isort==4.2.15
 itsdangerous==0.24

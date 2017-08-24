@@ -186,9 +186,19 @@ def show_single_shoppinglist(username, list_id):
             return redirect(url_for('show_user_record', username=username))
         
         if editable and method == 'put':
-            pass
-            # get form data
-            # attempt to update the details of shopping list
+            # get args data
+            success = None
+            description = request.args.get('description') or None
+            title = request.args.get('title') or None
+            if title:
+                # update the title
+                shopping_list.set_title(str(title))
+                success = "Update successful"
+            if description:
+                # update the description
+                shopping_list.set_description(str(description))
+                success = "Update successful"
+            flash(success)            
         
         if not error:
             list_details = dict(title=shopping_list.title,
@@ -238,10 +248,27 @@ def edit_shopping_item(username, list_id, item_id):
         editable = True
     if request.method == 'GET':
         method = request.args.get('_method')
+        
         if method == 'put' and editable:
-            # get the form data
-            # update the item
-            pass
+            # get the args data
+            success = None
+            name = request.args.get('name') or None
+            quantity = request.args.get('quantity') or None
+            unit = request.args.get('unit') or None
+            if name:
+                # update item's name
+                item.set_name(str(name))
+                success = 'Item has been updated'
+            if quantity:
+                # update item's name
+                item.set_quantity(float(quantity))
+                success = 'Item has been updated'
+            if unit:
+                # update item's name
+                item.set_unit(str(unit))
+                success = 'Item has been updated'
+            flash(success)                                #
+
         if method == 'delete' and editable:
             # attempt to delete the item
             item.delete()

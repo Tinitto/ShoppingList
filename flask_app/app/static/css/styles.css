@@ -64,3 +64,15 @@
 .home-intro {
     font-size: 1.3em;
 }
+
+#left-sidebar {
+    border-right-color: #266850;
+    border-right-width: 2px;
+    border-right-style: solid;
+}
+
+.sidebar_card {
+    border-bottom-color: #266850;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+}

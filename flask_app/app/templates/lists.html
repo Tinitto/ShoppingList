@@ -1,26 +1,37 @@
     {% extends "base.html" %}
     {% block content %}
     <div id='content' class="container list-page-content">
-      <div class='row'>
         {% for message in get_flashed_messages() %}
-        <div class='col-sm-12 text-center flash'>{{ message }}</div>
+        <div class='row alert alert-info'>        
+          <div class='col-sm-12 text-center flash'>{{ message }}</div>
+        </div>
         {% endfor %}
-      </div>
-      <div class='row'>
+
         {% if error %}
-        <div class='col-sm-12 text-center flash'>{{ error }}</div>
+        <div class='row alert alert-danger'>
+          <div class='col-sm-12 text-center flash'>{{ error }}</div>
+        </div>
         {% endif %}
-      </div>
+     
       <div class="row">
-        <div class="col-sm-4">
+        <div id="left-sidebar" class="col-sm-4">
+          <div class="container sidebar_card">
+            <div class="row">
+              <div class="col-sm-12">
           <h3>User details</h3>
           {% for detail in user_details.keys() %}
             <div>{{ detail }} : {{ user_details[detail] }}</div>
           {% endfor %}
           {% if editable and 'username' in session.keys() %}
+              </div>
+            </div>
+          </div>
+          <div class="container sidebar_card" style="margin-top:12%;">
+            <div class='row'>
+              <div class="col-sm-12">
+              <h5 style="padding-bottom: 10px;">Create New Shopping List</h5>
           <form action="{{ url_for('show_user_record', username=session['username'])}}" method="POST">
             <div class="form-group row">
-              <h3>Create New Shopping List</h3>
               <label for="title-in" class="col-sm-3 col-form-label">Title</label>
                 <div class="col-sm-9">
                 <input type="text" class="form-control" name='title' id="title-in" placeholder="Title">
@@ -32,22 +43,25 @@
             </div>
             </div>
           </form>
+          </div>
+            </div>
+          </div>
 
           {% endif %}
         </div><!--col-sm-3-->
         <div class="col-sm-8">
           <h1>User Record</h1>
-          User Lists
+          <h4>Shopping Lists</h4>
           {% for detail in user_lists %}
-            <div>
-              <a href="{{ url_for('show_single_shoppinglist', username=session['username'], list_id=detail.id) }}">
+            <div class="sidebar_card">
+              <h5><a href="{{ url_for('show_single_shoppinglist', username=session['username'], list_id=detail.id) }}">
                 {{ detail.title }}
-              </a>
+              </a></h5>
               {% if 'username' in session and editable %}
                 <form method="GET" action="{{ url_for('show_single_shoppinglist', username=detail.owner.username, list_id=detail.id) }}">
                   <input type="hidden" name="_method" value="delete" />  
-                  <button type="submit" class="btn btn-primary">Delete</button>
-                </form>
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>                
               {% endif %}
             </div>
           {% endfor %}

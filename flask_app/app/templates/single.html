@@ -1,27 +1,83 @@
 {% extends "base.html" %}
 {% block content %}
 <div id='content' class="container list-page-content">
-    <div class='row'>
-      {% for message in get_flashed_messages() %}
-      <div class='col-sm-12 text-center flash'>{{ message }}</div>
-      {% endfor %}
-    </div>
-    <div class='row'>
-      {% if error %}
-      <div class='col-sm-12 text-center flash'>{{ error }}</div>
-      {% endif %}
-    </div>
+  {% for message in get_flashed_messages() %}
+  <div class='row alert alert-info'>
+    <div class='col-sm-12 text-center flash'>{{ message }}</div>
+  </div>
+  {% endfor %}
+
+  {% if error %}
+  <div class='row alert alert-danger'>
+    <div class='col-sm-12 text-center flash'>{{ error }}</div>
+  </div>
+  {% endif %}
+  
     <div class="row">
-      <div class="col-sm-4">
+      <div id="left-sidebar" class="col-sm-4">
+          <div class="container sidebar_card">
+              <div class="row">
+                <div class="col-sm-12">
         <h3>Shopping list details</h3>
         {% for detail in list_details.keys() %}
           <div>{{ detail }} : {{ list_details[detail] }}</div>
         {% endfor %}
         {% if editable and 'username' in session.keys() %}
+
+        <!-- modal for editing details of shopping list -->
+        <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-primary front-submit" data-toggle="modal" data-target="#edit-list-details">Edit</button>
+                 
+        <!-- Modal -->
+        <div id="edit-list-details" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+                 
+          <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Editing "{{list_details['title']}}" shopping list</h4>
+              </div>
+                                   
+              <div class="modal-body">                                     
+                <form method="GET" action="{{ url_for('show_single_shoppinglist', username=username, list_id=list_id) }}">
+                  <div class="form-group row">            
+                    <label for="title-in" class="col-sm-3 col-form-label">Title</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" name='title' id="title-in" value="{{ list_details['title'] }}">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="description-in" class="col-sm-3 col-form-label">Description</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" name='description' id="description-in" value="{{ list_details['description'] }}">
+                    </div>
+                  </div>
+                  <input type="hidden" name="_method" value="put" />
+                  <div class="form-group row modal-footer">
+                    <div class="col-sm-4">
+                      <button type="submit" class="btn btn-primary front-submit">Save</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                </form>
+              </div> <!--modal-body-->
+            </div><!--modal-content-->
+          </div><!-- modal-dialog -->
+        </div><!--#edit-list-details -->
+      </div>
+    </div>
+  </div>
+  <div class="container sidebar_card" style="margin-top:12%;">
+    <div class='row'>
+      <div class="col-sm-12">
+
+ 
+        <!-- end modal for editing shopping list details -->  
         <form action="{{ url_for('show_single_shoppinglist', username=username, list_id=list_id)}}" method="POST">
             <h3>Add Item</h3>
             <div class="form-group row">
-             <label for="name-in" class="col-sm-3 col-form-label">Name</label>
+             <label for="name-in" class="col-sm-3 col-form-label">Item</label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" name='name' id="name-in" placeholder="Name">
                 </div>
@@ -29,13 +85,13 @@
             <div class="form-group row">
                 <label for="quantity-in" class="col-sm-3 col-form-label">Quantity</label>
                    <div class="col-sm-9">
-                       <input type="number" class="form-control" name='quantity' id="quantity-in">
+                       <input type="number" class="form-control" name='quantity' id="quantity-in" value=0>
                    </div>
             </div>
             <div class="form-group row">
                 <label for="unit-in" class="col-sm-3 col-form-label">Units</label>
                    <div class="col-sm-9">
-                       <input type="text" class="form-control" name='unit' id="unit-in" placeholder="units">
+                       <input type="text" class="form-control" name='unit' id="unit-in" value="units">
                    </div>
             </div>
             <div class="form-group row justify-content-end">
@@ -44,21 +100,70 @@
                 </div>
           </div>
         </form>
-
+      </div>
+    </div>
+  </div>
         {% endif %}
       </div><!--col-sm-3-->
       <div class="col-sm-8">
         <h1>Shopping List: {% if list_details %}{{ list_details['title']}}{% endif %}
         </h1>
-        Items
+        <h2>Items</h2>
         {% for item in items %}
-          <div>
+          <div class="sidebar_card">
             {{ item.name }} - {{item.quantity}} {{item.unit}}
             {% if 'username' in session and editable %}
               <form method="GET" action="{{ url_for('edit_shopping_item', username=username, item_id=item.id, list_id=item.parent_list.id) }}">
                 <input type="hidden" name="_method" value="delete" />  
-                <button type="submit" class="btn btn-primary">Delete</button>
+                <button type="submit" style="display: inline; float: left;" class="btn btn-danger btn-sm">Delete</button>
               </form>
+              <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit-item">Edit</button>
+
+            <!-- Modal -->
+            <div id="edit-item" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Editing {{item.parent_list.title}}</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form action="{{ url_for('edit_shopping_item', username=username, list_id=list_id, item_id=item.id)}}" method="GET">
+                      <h5>Edit Item - {{item.name}}</h5>
+                      <div class="form-group row">
+                       <label for="name-in" class="col-sm-3 col-form-label">Name</label>
+                          <div class="col-sm-9">
+                              <input type="text" class="form-control" name='name' id="name-in" value="{{item.name}}">
+                          </div>
+                      </div>
+                      <div class="form-group row">
+                          <label for="quantity-in" class="col-sm-3 col-form-label">Quantity</label>
+                             <div class="col-sm-9">
+                                 <input type="number" class="form-control" name='quantity' id="quantity-in" value="{{item.quantity}}">
+                             </div>
+                      </div>
+                      <div class="form-group row">
+                          <label for="unit-in" class="col-sm-3 col-form-label">Units</label>
+                             <div class="col-sm-9">
+                                 <input type="text" class="form-control" name='unit' id="unit-in" value="{{item.unit}}">
+                             </div>
+                      </div>
+                      <input type="hidden" name="_method" value="put" />
+                      <div class="form-group row modal-footer">
+                        <div class="col-sm-4">
+                          <button type="submit" class="btn btn-primary front-submit">Save</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
             {% endif %}
           </div>
         {% endfor %}

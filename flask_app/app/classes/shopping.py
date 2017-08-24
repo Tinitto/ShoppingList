@@ -125,7 +125,6 @@ class User(db.Model):
         return "<User: %s>" % self.username
 
 
-
 class ShoppingList(db.Model):
     """
     A ShoppingList represents one shopping list

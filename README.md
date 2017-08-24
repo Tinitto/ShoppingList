@@ -61,4 +61,4 @@ There is a demo on [Heroku](https://shoppinglist-andela-2.herokuapp.com).
 
     ```nosetests test ```
 
-5. Observer the output in your terminal
+5. Observe the output in your terminal

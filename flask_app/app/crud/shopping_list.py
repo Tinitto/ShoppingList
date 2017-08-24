@@ -13,10 +13,21 @@ def get_shopping_list(list_id):
     """
     if not utilities.check_type(list_id, int):
         raise ValueError('Id should be an integer')
-    shoppinglist = shopping.ShoppingList.query.get(list_id)
-    if not shoppinglist:
+    shopping_list = shopping.ShoppingList.query.get(list_id)
+    if not shopping_list:
         raise KeyError('The shopping list does not exist')
-    return shoppinglist
+    return shopping_list
+
+def get_shopping_item(item_id):
+    """
+    Try to get the ShoppingItem object
+    """
+    if not utilities.check_type(item_id, int):
+        raise ValueError('Id should be an integer')
+    shopping_item = shopping.ShoppingItem.query.get(item_id)
+    if not shopping_item:
+        raise KeyError('The shopping list item does not exist')
+    return shopping_item
 
 
 def add_item_with_details(shopping_list, name='', quantity=0,

@@ -6,6 +6,10 @@ install:
  - "pip install coveralls"
 env:
  - COVERAGE_FILE=".coverage"
+ - FLASK_APP="flask_app/run.py"
+ - SECRET="the-development-key-secret-hide-very-far"
+ - APP_SETTINGS="development"
+ - DATABASE_URL="sqlite://"
 script: coverage run --source=flask_app/app -m unittest discover flask_app/test
 notifications:
   webhooks: https://coveralls.io/webhook?repo_token=X6JdJ0hDMlzKhHIAi5NTG9ZUEkEw01PB2

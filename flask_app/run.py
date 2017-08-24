@@ -219,19 +219,37 @@ def show_single_shoppinglist(username, list_id):
 
 
 @app.route('/user/<string:username>/shoppinglist/<int:list_id>\
-/item/<int:item_id>', methods=['DELETE', 'PUT'])
+/item/<int:item_id>')
 def edit_shopping_item(username, list_id, item_id):
     """
     This route deals allows deleting (DELETE) or editing(PUT) of an
     item on a list
     """
-    if request.method == 'PUT':
-        pass
-        # get form data
-        # attempt to update the item
-    if request.method == 'DELETE':
-        pass
-        # attempt to delete the item
+    editable = None
+    error = None
+    # attempt to get the item
+    try:
+        item = shoppinglist_helpers.get_shopping_item(item_id)
+    except KeyError:
+        error = "The item does not exist"
 
+    if not error and user_functions.get_logged_in_username() == \
+                                     item.parent_list.owner.username:
+        editable = True
+    if request.method == 'GET':
+        method = request.args.get('_method')
+        if method == 'put' and editable:
+            # get the form data
+            # update the item
+            pass
+        if method == 'delete' and editable:
+            # attempt to delete the item
+            item.delete()
+            flash("Item deleted successfully")
+    flash(error)
+    return redirect(url_for('show_single_shoppinglist', username=username,
+                            list_id=list_id))
+
+        
 if __name__ == '__main__':
     app.run()

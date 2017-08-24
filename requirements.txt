@@ -1,5 +1,6 @@
 alembic==0.9.5
--e git+https://github.com/Tinitto/ShoppingList.git@d16eee3c3216a7fe06c1dec6243981596d8b3d95#egg=app&subdirectory=flask_app
+aniso8601==1.2.1
+-e git+https://github.com/Tinitto/ShoppingList.git@47736140976ce4fc0cf5a7df56b94aec6261d50a#egg=app&subdirectory=flask_app
 asciinema==1.4.0
 astroid==1.5.3
 Babel==2.5.0
@@ -15,9 +16,12 @@ Flask-Login==0.4.0
 Flask-Mail==0.9.1
 Flask-Migrate==2.1.0
 Flask-Principal==0.4.0
+Flask-RESTful==0.3.6
 Flask-Restless==0.17.0
+Flask-Script==2.0.5
 Flask-Security==3.0.0
 Flask-SQLAlchemy==2.2
+Flask-Testing==0.6.2
 Flask-WTF==0.14.2
 idna==2.6
 isort==4.2.15

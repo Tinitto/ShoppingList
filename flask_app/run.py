@@ -8,6 +8,7 @@ from flask import request, redirect, url_for,\
 from app import create_app
 from app.classes.shopping import db
 from app.crud import user as user_functions
+from app.crud import shopping_list as shoppinglist_helpers
 
 config_name = os.getenv('APP_SETTINGS') or 'development'
 app = create_app(config_name)
@@ -119,31 +120,118 @@ def show_user_record(username):
     It allows creation (POST) of new shopping
     lists also.
     """
-    flash('successful redirect')
-    return render_template('lists.html')
+    error = None
+    editable = False
+    user_details = None
+    user_lists = None
+    user = None
+    if user_functions.get_logged_in_username():
+        editable = True
+
+    try:
+        user = user_functions.get_user_by_username(username)
+    except KeyError:
+        error = "User does not exist"
+    
+    if user:
+        user_details = dict(name=user.name, email=user.email,
+            username=user.username)
+        user_lists = list(user.get_shopping_lists())
+        # show editable record to user i.e. option to add list
+    if request.method == 'POST' and not error:
+        # Get the form data
+        try:
+            form_data = user_functions.process_form_data(dict(request.form))
+        except AttributeError:
+            error = "Invalid form input"
+        if not error:
+            # Try to create a new shopping list
+            user_lists.append(user.create_shopping_list(**form_data))
+        
+    return render_template('lists.html', user_details=user_details,
+                 editable=editable, error=error, user_lists=user_lists)
 
 
-@app.route('/user/<string:username>/shoppinglist/<string:title>',
-methods=['POST', 'GET', 'DELETE', 'PUT'])
-def show_single_shoppinglist(username, title):
+@app.route('/user/<string:username>/shoppinglist/<int:list_id>',
+methods=['POST', 'GET'])
+def show_single_shoppinglist(username, list_id):
     """
     This view shows(GET) all the items in a shopping list of the 
     given title belonging to user of the mentioned username. 
 
-    It also allows for editting(PUT) and deleting(DELETE) of a 
+    It also allows for editting(put) and deleting(delete) of a 
     shopping list.
 
     It also allows for creation(POST) of new shoppinglist items
     """
+    # get the ShoppingList object
+    error = None
+    editable = False
+    list_details = {}
+    items = []
+    try:
+        shopping_list = shoppinglist_helpers.get_shopping_list(list_id)
+    except (ValueError, KeyError):
+        error = "Shopping list does not exist"
+    
+    if not error and user_functions.get_logged_in_username() == \
+                                     shopping_list.owner.username:
+        editable = True
+    if request.method == 'GET':
+        method = request.args.get('_method') or None
+        if editable and method == 'delete':
+            # attempt to delete the shoppinglist
+            shopping_list.delete()
+            flash('Delete successful')
+            return redirect(url_for('show_user_record', username=username))
+        
+        if editable and method == 'put':
+            pass
+            # get form data
+            # attempt to update the details of shopping list
+        
+        if not error:
+            list_details = dict(title=shopping_list.title,
+                            description=shopping_list.description)
+            items = list(shopping_list.get_shopping_items())
+        return render_template('single.html', list_details=list_details, username=username,
+                 editable=editable, error=error, items=items, list_id=list_id)
+        
+    if request.method == 'POST' and not error:
+        # get form data
+        try:
+            form_data = user_functions.process_form_data(dict(request.form))
+        except AttributeError:
+            error = "Invalid form input"
+            flash(error)
+    
+        if form_data:
+            try:
+                shoppinglist_helpers.add_item_with_details(shopping_list, **form_data)
+            except ValueError:
+                error = "Invalid form input for item"
+                flash(error)
+            else:
+                flash('Item has been added successfully')
+
+            return redirect(url_for('show_single_shoppinglist', username=username,
+                                list_id=list_id))
 
 
-@app.route('/user/<string:username>/shoppinglist/<string:title>\
-/item/<string:name>', methods=['DELETE', 'PUT'])
-def edit_shopping_item(username, title, name):
+@app.route('/user/<string:username>/shoppinglist/<int:list_id>\
+/item/<int:item_id>', methods=['DELETE', 'PUT'])
+def edit_shopping_item(username, list_id, item_id):
     """
     This route deals allows deleting (DELETE) or editing(PUT) of an
     item on a list
     """
+    if request.method == 'PUT':
+        pass
+        # get form data
+        # attempt to update the item
+    if request.method == 'DELETE':
+        pass
+        # attempt to delete the item
 
 if __name__ == '__main__':
     app.run()

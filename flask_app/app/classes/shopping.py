@@ -203,7 +203,7 @@ class ShoppingList(db.Model):
         """
         shopping_item = None
         if utilities.check_type(name, str):
-            shopping_list = ShoppingList.query.filter_by(name=name, parent_list=self).first()
+            shopping_item = ShoppingList.query.filter_by(name=name, parent_list=self).first()
         return shopping_item
 
     def save(self):

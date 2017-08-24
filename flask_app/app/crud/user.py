@@ -141,7 +141,15 @@ def remove_user_from_session():
         session.modified = True
     else:
         raise KeyError('Username does not exist in the session')
-        
+
+def get_logged_in_username():
+    """
+    This checks the session and gets the logged in user's username
+    """
+    if 'username' in session.keys():
+        return session['username']
+    else:
+        return None        
         
 def process_form_data(dict_form_data):
     """ 

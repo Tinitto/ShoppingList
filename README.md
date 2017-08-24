@@ -15,6 +15,9 @@ It also enables users to share such lists with other people for example if the s
 4. Flask version 0.12+
 5. Python version 3.5+
 
+## Demo
+There is a demo on [Heroku](https://shoppinglist-andela-2.herokuapp.com).
+
 ## Composition
 1. [Wireframes](https://github.com/Tinitto/ShoppingList/tree/master/wireframes) drawn with [Pencil](https://pencil.evolus.vn/)
 2. [UML class diagram](https://github.com/Tinitto/ShoppingList/tree/master/designs)
@@ -23,17 +26,23 @@ It also enables users to share such lists with other people for example if the s
 
 ## How to run flask application
 1. Clone the repository to your computer
-2. Ensure you have installed the above dependencies into your virtualenv
-3. In your terminal, enter the directory ShoppingList/flask_app
+2. Activate your virtualenv
+3. In your terminal, enter the directory ShoppingList
 4. run the following command to install the app package into your virtualenv (Don't forget the dot at the end)
 
-    ``` pip install --editable . ```
+    ``` pip install -r requirements.txt ```
 
 5. To start the app, run the following commands in succession still in the same directory
 
-    ```export FLASK_APP=app```
+    ```export FLASK_APP=flask_app/run.py```
 
     ```export FLASK_DEBUG=true ```
+
+    ```export DATABASE_URL="sqlite://"```
+
+    ```export APP_SETTINGS="development"```
+
+    ```export SECRET="the-development-key-secret-hide-very-far"```
 
     ```flask run ```
 
@@ -53,14 +62,3 @@ It also enables users to share such lists with other people for example if the s
     ```nosetests test ```
 
 5. Observer the output in your terminal
-
-## To Do
-1. Finish Login, Logout, Register, and CRUD helper functions
-2. Finish templates for single shopping list, list of shopping lists and create/edit forms for shopping lists and items
-3. Add Coveralls
-4. Deploy demo app to Heroku
-
-## Other Details
-- Pivotal Tracker board for the project can be found [here](https://www.pivotaltracker.com/n/projects/2092528)
-
-

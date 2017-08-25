@@ -18,6 +18,8 @@ It also enables users to share such lists with other people for example if the s
 ## Demo
 There is a demo on [Heroku](https://shoppinglist-andela-2.herokuapp.com).
 
+**Note: This demo runs on a postgresql database since heroku doesnot support sqlite. However, cloning the repo will give you access to non-persistent data stored in sqlite stored in memory(RAM) using 'sqlite//' or ``` :memory:```**
+
 ## Composition
 1. [Wireframes](https://github.com/Tinitto/ShoppingList/tree/master/wireframes) drawn with [Pencil](https://pencil.evolus.vn/)
 2. [UML class diagram](https://github.com/Tinitto/ShoppingList/tree/master/designs)

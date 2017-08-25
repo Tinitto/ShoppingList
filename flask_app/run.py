@@ -42,7 +42,7 @@ def signup():
         try:
             user_functions.create_new_user(form_data)
         except ValueError:
-            error = 'Unacceptable form input %s' % str(form_data)
+            error = 'Invalid form input'
         else:
             # if new user is created, log them in
             try:

@@ -14,4 +14,4 @@ script: sh -c 'cd ./flask_app/ && coverage run -m --source=app unittest discover
 notifications:
   webhooks: https://coveralls.io/webhook?repo_token=X6JdJ0hDMlzKhHIAi5NTG9ZUEkEw01PB2
 after_success:
-  coveralls
+  sh -c 'cd ./flask_app/ && coveralls'

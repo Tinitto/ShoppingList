@@ -5,7 +5,7 @@ install:
  - "pip install -r requirements.txt"
  - "pip install coveralls"
 env:
- - COVERAGE_FILE="flask_app/.coverage"
+ - COVERAGE_FILE=".coverage"
  - FLASK_APP="flask_app/run.py"
  - SECRET="the-development-key-secret-hide-very-far"
  - APP_SETTINGS="development"
